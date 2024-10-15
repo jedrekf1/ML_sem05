@@ -1,0 +1,41 @@
+import matplotlib.pyplot as plt 
+import numpy as np
+import random
+mean= [3, 3]
+cov = [[1, 0], [0, 1]]
+a = np.random.multivariate_normal(mean, cov, 500).T
+mean = [-3, -3]
+cov = [[2, 0], [0, 5]]
+b = np.random.multivariate_normal(mean, cov, 500).T
+c = np.concatenate((a, b) , axis = 1) 
+c=c.T
+np.random.shuffle (c)
+c=c.T
+x = c[0] 
+y=c[1]
+plt.plot(x, y, 'x') 
+plt.axis('equal') 
+plt.show()
+
+import pandas as pd
+import seaborn as sns
+from sklearn.cluster import DBSCAN
+df = pd.DataFrame(c.T, columns=["x", "y"])
+print(df)
+
+# DBSCAN algorithm implementation
+dbscan = DBSCAN(eps=0.4, min_samples=5)  
+df['cluster'] = dbscan.fit_predict(df[['x', 'y']])
+
+# Cluster centers calculation
+centers = df.groupby('cluster')[['x', 'y']].mean()
+print(centers)
+
+
+# Clusters visualization
+plt.scatter(df['x'], df['y'], c=df['cluster'], cmap='rainbow', alpha=0.5, label='Data points')
+plt.scatter(centers['x'], centers['y'], c='black', marker='x', s=100, label='Clusters centers')
+plt.xlabel('x')
+plt.ylabel('y')
+plt.legend()
+plt.show()
